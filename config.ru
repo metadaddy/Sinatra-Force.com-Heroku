@@ -1,2 +1,2 @@
-require 'demo'
+require './demo'
 run Sinatra::Application
