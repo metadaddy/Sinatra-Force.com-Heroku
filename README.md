@@ -24,3 +24,9 @@ Create a remote access app (**App Setup | Develop | Remote Access**) in a Salesf
     	LOGIN_SERVER="https://login.salesforce.com"
 
 Open https://YOUR-HEROKU-APP.heroku.com/ in a browser. Log in with a Salesforce username/password and you should see a list of 20 accounts. You can create/read/update/delete.
+
+How It Works
+------------
+
+The `before` filter checks whether there is an OAuth access token in the session. If there is, then it creates an OAuth2::AccessToken object from the stored data, otherwise, it renders the `auth.rb` view, which checks if the browser connected via https. If the connection is secure, the browser is redirected to /oauth, otherwise an error message is shown.
+
