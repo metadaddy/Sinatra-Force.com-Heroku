@@ -23,4 +23,4 @@ Create a remote access app (**App Setup | Develop | Remote Access**) in a Salesf
     	CLIENT_SECRET="REMOTE_ACCESS_APP_CONSUMER_SECRET" \
     	LOGIN_SERVER="https://login.salesforce.com"
 
-Open https://YOUR-HEROKU-APP.heroku.com/ in a browser
+Open https://YOUR-HEROKU-APP.heroku.com/ in a browser. Log in with a Salesforce username/password and you should see a list of 20 accounts. You can create/read/update/delete.
