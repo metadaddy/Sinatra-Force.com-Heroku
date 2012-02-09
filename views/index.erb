@@ -22,7 +22,7 @@
 			<input type="submit" id="new" name="new" value="New" />
 		</form>
 		<table class="accountlist">
-		  <% if @accounts['records'] %>
+		  <% if @accounts && @accounts['records'] %>
 		    <% @accounts['records'].each do |record| %>
 			    <tr><td><a href="detail?id=<%= record['Id'] %>"><%= record['Name'] %></a></td></tr>
         <% end %>
