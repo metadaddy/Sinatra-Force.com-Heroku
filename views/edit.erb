@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Account Detail</title>
+		<link href="/stylesheets/style.css" rel="stylesheet" type="text/css" />
+    </head>
+    <body>
+		<h1 id="header">Account Detail</h1>
+		<form id="editform" action="account" method="post">
+			<input type="hidden" name="id" id="id" value="<%= @account['Id'] %>" />
+			<table>
+				<tr><td>Name:</td><td><input name="Name" id="Name" value="<%= @account['Name'] %>"/></td></tr>
+				<tr><td>Industry:</td><td><input name="Industry" id="Industry" value="<%= @account['Industry'] %>"/></td></tr>
+				<tr><td>Ticker Symbol:</td><td><input name="TickerSymbol" id="TickerSymbol" value="<%= @account['TickerSymbol'] %>"/></td></tr>
+			</table>
+			<br/>
+			<input type="submit" id="action" name="<%= @action_name %>" value="<%= @action_value %>" />
+		</form>
+		<p><a href="/">Home</a></p>
+	</body>
+</html>

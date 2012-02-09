@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Account Detail</title>
+		<link href="/stylesheets/style.css" rel="stylesheet" type="text/css" />
+    </head>
+    <body>
+		<h1>Account Detail</h1>
+		<table>
+			<tr><td>Account Name:</td><td id="accountname"><%= @account['Name'] %></td></tr>
+		 	<tr><td>Industry:</td><td><a id="industry" href="/?field=Industry&amp;value=<%= @account['Industry'] %>&amp;search=Search"><%= @account['Industry'] %></a></td></tr>
+			<tr><td>Ticker Symbol:</td><td id="tickersymbol"><%= @account['TickerSymbol'] %></td></tr>
+		</table>
+		<form action="/action" method="post">
+			<input type="hidden" name="id" id="id" value="<%= @account['Id'] %>" />
+			<input type="submit" id="delete" name="delete" value="Delete" />
+			<input type="submit" id="edit" name="edit" value="Edit" />
+		</form>
+		<p><a href="/">Home</a></p>
+    </body>
+</html>

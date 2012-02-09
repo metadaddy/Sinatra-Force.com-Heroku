@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title><%= @action_value %> Account</title>
+		<link href="/stylesheets/style.css" rel="stylesheet" type="text/css" />
+    </head>
+    <body onLoad="setTimeout(function(){window.location = '/';}, 3000)">
+		<p><%= @action_value %> <span id="id"><%= @result['id'] %></span>
+		<p><a href="/">Home</a></p>
+	</body>
+</html>
