@@ -26,9 +26,9 @@ def oauth2_client
   )
 end
 
-# Filter for all paths except /oauth*
+# Filter for all paths except /oauth/callback
 before do
-  pass if request.path_info.start_with?("/oauth")
+  pass if request.path_info == '/oauth/callback'
   
   token = session['access_token']
   @instance_url = session['instance_url']
@@ -36,8 +36,28 @@ before do
   if token
     @access_token = OAuth2::AccessToken.from_hash(oauth2_client, { :access_token => token, :header_format => 'OAuth %s' } )
   else
+    @auth_url = oauth2_client.auth_code.authorize_url(
+      :redirect_uri => "https://#{request.host}/oauth/callback"
+    )
+    
     halt erb :auth
   end  
+end
+
+get '/oauth/callback' do
+  begin
+    access_token = oauth2_client.auth_code.get_token(params[:code], 
+      :redirect_uri => "https://#{request.host}/oauth/callback")
+
+    session['access_token'] = access_token.token
+    session['instance_url'] = access_token.params['instance_url']
+    
+    redirect '/'
+  rescue => exception
+    output = '<html><body><tt>'
+    output += "Exception: #{exception.message}<br/>"+exception.backtrace.join('<br/>')
+    output += '<tt></body></html>'
+  end
 end
 
 get '/' do
@@ -139,24 +159,3 @@ get '/logout' do
   erb :logout
 end
 
-get '/oauth' do
-  redirect oauth2_client.auth_code.authorize_url(
-    :redirect_uri => "https://#{request.host}/oauth/callback"
-  )
-end
-
-get '/oauth/callback' do
-  begin
-    access_token = oauth2_client.auth_code.get_token(params[:code], 
-      :redirect_uri => "https://#{request.host}/oauth/callback")
-
-    session['access_token'] = access_token.token
-    session['instance_url'] = access_token.params['instance_url']
-    
-    redirect '/'
-  rescue => exception
-    output = '<html><body><tt>'
-    output += "Exception: #{exception.message}<br/>"+exception.backtrace.join('<br/>')
-    output += '<tt></body></html>'
-  end
-end

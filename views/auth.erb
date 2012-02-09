@@ -11,7 +11,7 @@
       	document.write("OAuth will not work correctly from plain http. "+
       			"Please use an https URL.");
       } else {
-      	window.location.href = "/oauth";
+      	window.location.href = "<%= @auth_url %>";
       }
     </script>
   </body>
