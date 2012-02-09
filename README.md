@@ -25,7 +25,7 @@ Create a remote access app (**App Setup | Develop | Remote Access**) in a Salesf
 
 Open https://YOUR-HEROKU-APP.heroku.com/ in a browser. Log in with a Salesforce username/password and you should see a list of 20 accounts. You can create/read/update/delete.
 
-The app is deployed at https://warm-dawn-1409.heroku.com/ - you can go there and log in with Salesforce credentials to browser the Accounts in your org.
+The app is deployed at https://warm-dawn-1409.heroku.com/ - you can go there and log in with Salesforce credentials to browse the Accounts in your org.
 
 How It Works
 ------------
