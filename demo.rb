@@ -6,6 +6,8 @@ require 'cgi'
 require 'dalli'
 require 'rack/session/dalli' # For Rack sessions in Dalli
 
+$stdout.sync = true
+
 # Dalli is a Ruby client for memcache
 def dalli_client
   Dalli::Client.new(nil, :compression => true, :namespace => 'rack.session', :expires_in => 3600)
@@ -26,22 +28,40 @@ def oauth2_client
   )
 end
 
+# Subclass OAuth2::AccessToken so we can do auto-refresh
+class ForceToken < OAuth2::AccessToken
+  def request(verb, path, opts={}, &block)
+    response = super(verb, path, opts, &block)
+    if response.status == 401
+      puts "Refreshing access token"
+      @token = refresh!.token
+      response = super(verb, path, opts, &block)
+    end
+    response
+  end
+end
+
 # Filter for all paths except /oauth/callback
 before do
   pass if request.path_info == '/oauth/callback'
   
-  token = session['access_token']
+  token         = session['access_token']
+  refresh       = session['refresh_token']
   @instance_url = session['instance_url']
   
   if token
-    @access_token = OAuth2::AccessToken.from_hash(oauth2_client, { :access_token => token, :header_format => 'OAuth %s' } )
+    @access_token = ForceToken.from_hash(oauth2_client, { :access_token => token, :refresh_token =>  refresh, :header_format => 'OAuth %s' } )
   else
-    @auth_url = oauth2_client.auth_code.authorize_url(
-      :redirect_uri => "https://#{request.host}/oauth/callback"
-    )
-    
-    halt erb :auth
+    redirect oauth2_client.auth_code.authorize_url(:redirect_uri => "https://#{request.host}/oauth/callback")
   end  
+end
+
+after do
+  # Token may have refreshed!
+  if session['access_token'] != @access_token.token
+    puts "Putting refreshed access token in session"
+    session['access_token'] = @access_token.token
+  end
 end
 
 get '/oauth/callback' do
@@ -49,8 +69,9 @@ get '/oauth/callback' do
     access_token = oauth2_client.auth_code.get_token(params[:code], 
       :redirect_uri => "https://#{request.host}/oauth/callback")
 
-    session['access_token'] = access_token.token
-    session['instance_url'] = access_token.params['instance_url']
+    session['access_token']  = access_token.token
+    session['refresh_token'] = access_token.refresh_token
+    session['instance_url']  = access_token.params['instance_url']
     
     redirect '/'
   rescue => exception
@@ -159,3 +180,9 @@ get '/logout' do
   erb :logout
 end
 
+get '/revoke' do
+  # For testing - revoke the token, but leave it in place, so we can test refresh
+  @access_token.get(ENV['LOGIN_SERVER']+'/services/oauth2/revoke?token='+session['access_token'])
+  puts "Revoked token #{@access_token.token}"
+  "Revoked token #{@access_token.token}"
+end
