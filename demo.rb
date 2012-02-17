@@ -58,7 +58,7 @@ end
 
 after do
   # Token may have refreshed!
-  if session['access_token'] != @access_token.token
+  if @access_token && session['access_token'] != @access_token.token
     puts "Putting refreshed access token in session"
     session['access_token'] = @access_token.token
   end
